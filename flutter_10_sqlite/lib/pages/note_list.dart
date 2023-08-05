@@ -105,8 +105,8 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.delete_forever_sharp,color: Colors.white,),
-                Text('Delete Note',style: TextStyle(color: Colors.white),),
+                Icon(Icons.open_in_new,color: Colors.white,),
+                Text('Open Note',style: TextStyle(color: Colors.white),),
               ],
             ),
           ),),
@@ -145,9 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
             title: Text(notes[index].title,
               style: TextStyle(fontSize: 20),
             ),
-            subtitle: Text(notes[index].description==null?'':notes[index].description!,
-              style: TextStyle(color: const Color.fromARGB(255, 108, 108, 108)),
-            ),
+            subtitle: notes[index].description==null?null:
+              Text(notes[index].description!.length<20?notes[index].description!:notes[index].description!.substring(0,20)+'...',
+                style: TextStyle(color: const Color.fromARGB(255, 108, 108, 108)),
+              ),
             trailing: GestureDetector(
               // onTap:() => _deleteNote(content,notes[index]),
               onTap: () => showDialog(context: context, builder: (context)=>_alertDialog(context, index),

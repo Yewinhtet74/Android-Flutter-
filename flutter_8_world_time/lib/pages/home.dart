@@ -21,13 +21,13 @@ class _HomeState extends State<Home> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print('reach home');
+    // print('reach home');
   }
   @override
   Widget build(BuildContext context) {
     wt = wt.url==''? ModalRoute.of(context)!.settings.arguments as WorldTime : wt;
-    print('build home');
-    print(wt?.time);
+    // print('build home');
+    // print(wt?.time);
     String img=wt.dayTime ? 'assets/day.jpg':'assets/night.jpg';
     return Scaffold(
       body: Container(
@@ -46,8 +46,8 @@ class _HomeState extends State<Home> {
                 onPressed: () async{
                   WorldTime res=await Navigator.pushNamed(context, '/choose_loc') as WorldTime;
                   setState(() {
-                    print('In state');
-                    print(res.time);
+                    // print('In state');
+                    // print(res.time);
                     wt=res;
                     // print(wt.time);
                   });

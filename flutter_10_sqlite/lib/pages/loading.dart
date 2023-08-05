@@ -24,7 +24,7 @@ class _LoadingState extends State<Loading> {
     // TODO: implement initState
     super.initState();
     getData();
-    print('done');
+    // print('done');
   }
   @override
   Widget build(BuildContext context) {
