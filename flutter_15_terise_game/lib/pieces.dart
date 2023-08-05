@@ -9,7 +9,8 @@ class Pieces{
   int rotate=0;
   int row=10,column=15;
   Map<Tetromino,List> rme={};
-  Pieces({required this.row,required this.column}){
+  BoardSize boardSize;
+  Pieces({required this.boardSize,required this.row,required this.column}){
     
   rme={
     Tetromino.L:[
@@ -91,7 +92,15 @@ class Pieces{
   }
 
   void newRandomPiece(){
-    type=Tetromino.values[Random().nextInt(Tetromino.values.length)];
+    switch(boardSize){
+      case BoardSize.small:
+        type=Tetromino.values[Random().nextInt(3)<2?Random().nextInt(2):Random().nextInt(Tetromino.values.length)];break;
+      case BoardSize.hard:
+        type=Tetromino.values[Random().nextInt(3)<2?Random().nextInt(Tetromino.values.length-2)+2:Random().nextInt(Tetromino.values.length)];break;
+      default:
+        type=Tetromino.values[Random().nextInt(Tetromino.values.length)];break;
+    }
+    
     // type=Tetromino.O;
     init_piece();
     rotate=0;

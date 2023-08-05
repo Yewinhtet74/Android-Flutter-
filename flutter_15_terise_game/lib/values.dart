@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 // int column=20;
 
 enum Tetromino{
-  L,J,I,O,S,Z,T
+  I,O,L,J,S,Z,T
 }
 
 Map<Tetromino,Color> TetrominoColor={
-  Tetromino.L:Color.fromARGB(255, 0,30,255),
   Tetromino.J:Color(0xFF9D00FF),
   Tetromino.I:Color.fromARGB(255, 251,255,255),
+  Tetromino.L:Color.fromARGB(255, 0,30,255),
   Tetromino.O:Color.fromARGB(255,116,238,21),
   Tetromino.Z:Color.fromARGB(255,240,0,255),
   Tetromino.S:Color.fromARGB(255,77,238,234),

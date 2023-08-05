@@ -6,37 +6,67 @@ import 'package:flutter_15_terise_game/pieces.dart';
 import 'package:flutter_15_terise_game/values.dart';
 import 'package:flutter_15_terise_game/pixels.dart';
 import 'package:flutter_15_terise_game/welcome.dart';
+import 'package:flutter_15_terise_game/database_connection.dart';
 
 class MyHome extends StatefulWidget {
   BoardSize boardSize;
   MyHome({super.key, required this.boardSize});
 
   @override
-  State<MyHome> createState() => _MyHomeState(row:BoardSizeValue[boardSize]![0],column:BoardSizeValue[boardSize]![1],speed: BoardSizeSpeed[boardSize]!);
+  State<MyHome> createState() => _MyHomeState(boardSize:boardSize,row:BoardSizeValue[boardSize]![0],column:BoardSizeValue[boardSize]![1],speed: BoardSizeSpeed[boardSize]!);
 }
 
 class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
   int row;int column;
   int speed;
   int _score=0;
-  Pieces currentPiece=Pieces(row: 10,column: 15);
+  Pieces currentPiece=Pieces(boardSize: BoardSize.small,row: 10,column: 15);
   List<Color?> gameboard=[],gameboard2=[];
   Timer? timer,downbtn;
   AnimationController? _iconController;
   List last_tetromino=[];
   String? _info;
+  int highscore=0;
+  BoardSize boardSize;
 
-  _MyHomeState({required this.row,required this.column, required this.speed});
+  _MyHomeState({required this.boardSize,required this.row,required this.column, required this.speed});
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getHighScore();
     _iconController=AnimationController(vsync: this,duration: Duration(seconds: 1));
-    currentPiece=Pieces(row: row, column: column);
+    currentPiece=Pieces(boardSize:boardSize,row: row, column: column);
     gameboard=List.generate((row*column), (i) => null);
     _startGame();
     giveInfo('Game Start',2500);
+  }
+   void getHighScore()async{
+    List ans=await _getAll();
+    print(ans);
+    if(ans.length>0){
+    Map scores=ans[0];
+    setState(() {
+      highscore=scores['score'];
+    });
+    }
+  }
+   Future<int> _insertScore(int score)async{
+  DatabaseConnection dbs=DatabaseConnection();
+  dbs.deleteAll();
+  int res=await dbs.insert(score);
+  return res;
+  }
+  Future<int> _updateScore(int score,int id)async{
+  DatabaseConnection dbs=DatabaseConnection();
+  int res=await dbs.updateScore(score,id);
+  return res;
+  }
+  Future<List> _getAll()async{
+  DatabaseConnection dbs=DatabaseConnection();
+  List res=await dbs.getAll();
+  return res;
   }
 
   void giveInfo(String ss,int milli){
@@ -152,8 +182,18 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
     }
   }
 
-  void gameOver(){
+  void gameOver()async{
     if(timer!.isActive) timer!.cancel();
+    if(_score>highscore){
+    List ans=await _getAll();
+    print(ans);
+    if(ans.length>0){
+    Map scores=ans[0];
+      _updateScore(_score,scores['id'] );
+    }else{
+      _insertScore(_score);
+    }
+    }
     showDialog(context: context, builder: (context)=>AlertDialog(
                 title: Column(
                   children: [
@@ -173,9 +213,22 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                         ),
                       ),
                     ),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                          style: TextStyle(fontSize: 20),
+                          children: [
+                              TextSpan(text: _score>highscore?'New High Score\n\n Last High Score ': 'High Score '),
+                              TextSpan(text: highscore==null?'0':highscore.toString(),style: TextStyle(color: TetrominoColor[Tetromino.Z]))
+                            ]
+                        )),
+                      ),
+                    ),
                   ],
                 ),
-                
                 // contentPadding: EdgeInsets.all(4),
                 actionsAlignment: MainAxisAlignment.spaceEvenly,
                 actionsPadding: EdgeInsets.symmetric(vertical: 40),
@@ -188,6 +241,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                     last_tetromino.clear();
                     giveInfo('Game Start',2500);
                     _startGame();
+                    getHighScore();
                     Navigator.pop(context);
                   }, icon: Icon(Icons.replay,size: 50,)),
                 ],
@@ -265,6 +319,8 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
     // row=15;column=20;
     // print(currentPiece.position);
     double height=MediaQuery.of(context).size.width/row*column;
+    double btn_height=(MediaQuery.of(context).size.height-height-90)/4;
+    print('BTN height'+btn_height.toString());
     print('Display');
     return Scaffold(
       body: SafeArea(child: Column(
@@ -294,7 +350,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                   ),
                 ),
                 Text(_info==null?'':_info!,
-                  style: TextStyle(fontSize: 100,color: Colors.greenAccent.shade700),
+                  style: TextStyle(fontSize: 80,color: Colors.greenAccent.shade700),
                 )
               ],
             ),
@@ -302,15 +358,30 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
           Container(
             width: double.infinity,
             height: 50,
-            child: Center(
-              // child: Text('Score '+_score.toString(),style: TextStyle(fontSize: 25),),
-              child: RichText(text: TextSpan(
-                style: TextStyle(fontSize: 25),
-                children: [
-                    TextSpan(text: 'Score '),
-                    TextSpan(text:_score.toString(),style: TextStyle(fontSize: 30,color: Colors.greenAccent.shade700))
-                  ]
-              )),
+            child: Stack(
+              alignment: Alignment.centerRight,
+              children: [
+                Center(
+                  // child: Text('Score '+_score.toString(),style: TextStyle(fontSize: 25),),
+                  child: RichText(text: TextSpan(
+                    style: TextStyle(fontSize: 25),
+                    children: [
+                        TextSpan(text: 'Score '),
+                        TextSpan(text:_score.toString(),style: TextStyle(fontSize: 30,color: Colors.greenAccent.shade700))
+                      ]
+                  )),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: RichText(text: TextSpan(
+                      style: TextStyle(fontSize: 15),
+                      children: [
+                          TextSpan(text: 'High Score '),
+                          TextSpan(text:highscore==null?'0':highscore.toString(),style: TextStyle(color: TetrominoColor[Tetromino.Z]))
+                        ]
+                    )),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -378,10 +449,10 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                     GestureDetector(
                       onTap: play_pause,
                       child: CircleAvatar(
-                        radius: 50,
+                        radius: btn_height,
                         backgroundColor: Colors.black54,
                         child: CircleAvatar(
-                          radius: 47,
+                          radius: btn_height-4,
                           backgroundColor: Colors.grey.shade700,
                           child:AnimatedIcon(icon: AnimatedIcons.pause_play, progress: _iconController!,color: Colors.white,)
                           
@@ -401,10 +472,12 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                         if(downbtn!=null)downbtn!.cancel();
                       },
                       child: CircleAvatar(
-                        radius: 50,
+                        // radius: 50,
+                        radius: btn_height,
                         backgroundColor: Colors.black54,
                         child: CircleAvatar(
-                          radius: 47,
+                          // radius: 47,
+                          radius: btn_height-4,
                           backgroundColor: Colors.grey.shade700,
                           child: Icon(Icons.arrow_downward,color: Colors.white,)
                           

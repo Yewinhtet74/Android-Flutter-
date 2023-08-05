@@ -19,7 +19,8 @@ class _NoteDetailState extends State<NoteDetail> {
   DatabaseConnection dbs=DatabaseConnection();
   int res=await dbs.insertNote(note);
   return res;
-  }Future<int> _updateNote()async{
+  }
+  Future<int> _updateNote()async{
   DatabaseConnection dbs=DatabaseConnection();
   int res=await dbs.updateNote(note);
   return res;
