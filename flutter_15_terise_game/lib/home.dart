@@ -194,7 +194,8 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
       _insertScore(_score);
     }
     }
-    showDialog(context: context, builder: (context)=>AlertDialog(
+    showDialog(context: context,barrierDismissible: false, builder: (context)=>AlertDialog(
+      backgroundColor: Colors.grey.shade900,
                 title: Column(
                   children: [
                     Center(child: Padding(
@@ -233,7 +234,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                 actionsAlignment: MainAxisAlignment.spaceEvenly,
                 actionsPadding: EdgeInsets.symmetric(vertical: 40),
                 actions: [
-                  IconButton(onPressed: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>WelcomePage()));}, icon: Icon(Icons.home_filled,size: 50,)),
+                  IconButton(onPressed: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>WelcomePage()));}, icon: Icon(Icons.home_filled,size: 50,color: Colors.white60,)),
                   IconButton(onPressed: (){
                     _score=0;
                     currentPiece.newRandomPiece();
@@ -243,7 +244,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                     _startGame();
                     getHighScore();
                     Navigator.pop(context);
-                  }, icon: Icon(Icons.replay,size: 50,)),
+                  }, icon: Icon(Icons.replay,size: 50,color: Colors.white60,)),
                 ],
     ));
   }
@@ -320,7 +321,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
     // print(currentPiece.position);
     double height=MediaQuery.of(context).size.width/row*column;
     double btn_height=(MediaQuery.of(context).size.height-height-90)/4;
-    print('BTN height'+btn_height.toString());
+    // print('BTN height'+btn_height.toString());
     print('Display');
     return Scaffold(
       backgroundColor: Colors.grey.shade900,

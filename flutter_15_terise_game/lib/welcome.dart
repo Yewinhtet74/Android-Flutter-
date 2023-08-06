@@ -86,7 +86,7 @@ class _WelcomePageState extends State<WelcomePage> {
               ElevatedButton(onPressed: ()async{
                 await Navigator.push(context, MaterialPageRoute(builder: (context)=>MyHome(boardSize: BoardSize.mediun,)));
                 getHighScore();
-              }, child: Text('Mediun',style: TextStyle(fontSize: 20,color: Colors.grey.shade900),),
+              }, child: Text('Medium',style: TextStyle(fontSize: 20,color: Colors.grey.shade900),),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: TetrominoColor[Tetromino.O],
                   padding: EdgeInsets.symmetric(horizontal: 50,vertical: 20),
