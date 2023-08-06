@@ -55,46 +55,56 @@ class _WelcomePageState extends State<WelcomePage> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text('Welcome To Teris Game',
-              style: TextStyle(fontSize: 40,color: TetrominoColor[Tetromino.I]),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('High Score ',style: TextStyle(fontSize: 35,color: Colors.white60)),
-                Text(highscore==null?'0':highscore.toString(),style: TextStyle(fontSize: 40,color: TetrominoColor[Tetromino.Z]))
-              ],),
-            ElevatedButton(onPressed: ()async{
-              await Navigator.push(context, MaterialPageRoute(builder: (context)=>MyHome(boardSize: BoardSize.small,)));
-              getHighScore();
-            }, child: Text('Easy',style: TextStyle(fontSize: 20),),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: TetrominoColor[Tetromino.L],
-                padding: EdgeInsets.symmetric(horizontal: 50,vertical: 20)
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          image: DecorationImage(image: AssetImage('assets/bg.jpeg',),fit: BoxFit.cover,opacity:0.8)
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 80),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text('Teris Game',
+                style: TextStyle(fontSize: 50,color: TetrominoColor[Tetromino.I]),
               ),
-            ),
-            ElevatedButton(onPressed: ()async{
-              await Navigator.push(context, MaterialPageRoute(builder: (context)=>MyHome(boardSize: BoardSize.mediun,)));
-              getHighScore();
-            }, child: Text('Mediun',style: TextStyle(fontSize: 20),),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: TetrominoColor[Tetromino.O],
-                padding: EdgeInsets.symmetric(horizontal: 50,vertical: 20)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('High Score ',style: TextStyle(fontSize: 35,color: Colors.white60)),
+                  Text(highscore==null?'0':highscore.toString(),style: TextStyle(fontSize: 40,color: TetrominoColor[Tetromino.Z]))
+                ],),
+              ElevatedButton(onPressed: ()async{
+                await Navigator.push(context, MaterialPageRoute(builder: (context)=>MyHome(boardSize: BoardSize.small,)));
+                getHighScore();
+              }, child: Text('Easy',style: TextStyle(fontSize: 20,color: Colors.white),),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: TetrominoColor[Tetromino.L],
+                  padding: EdgeInsets.symmetric(horizontal: 50,vertical: 20),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7))
+                ),
               ),
-            ),
-            ElevatedButton(onPressed: ()async{
-              await Navigator.push(context, MaterialPageRoute(builder: (context)=>MyHome(boardSize: BoardSize.hard,)));
-              getHighScore();
-            }, child: Text('Hard',style: TextStyle(fontSize: 20),),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: TetrominoColor[Tetromino.Z],
-                padding: EdgeInsets.symmetric(horizontal: 50,vertical: 20)
+              ElevatedButton(onPressed: ()async{
+                await Navigator.push(context, MaterialPageRoute(builder: (context)=>MyHome(boardSize: BoardSize.mediun,)));
+                getHighScore();
+              }, child: Text('Mediun',style: TextStyle(fontSize: 20,color: Colors.grey.shade900),),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: TetrominoColor[Tetromino.O],
+                  padding: EdgeInsets.symmetric(horizontal: 50,vertical: 20),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7))
+                ),
               ),
-            ),
-          ],
+              ElevatedButton(onPressed: ()async{
+                await Navigator.push(context, MaterialPageRoute(builder: (context)=>MyHome(boardSize: BoardSize.hard,)));
+                getHighScore();
+              }, child: Text('Hard',style: TextStyle(fontSize: 20,color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: TetrominoColor[Tetromino.Z],
+                  padding: EdgeInsets.symmetric(horizontal: 50,vertical: 20),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7))
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

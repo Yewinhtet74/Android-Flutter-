@@ -323,6 +323,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
     print('BTN height'+btn_height.toString());
     print('Display');
     return Scaffold(
+      backgroundColor: Colors.grey.shade900,
       body: SafeArea(child: Column(
         children: [
           GestureDetector(
@@ -349,8 +350,11 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                     ),
                   ),
                 ),
-                Text(_info==null?'':_info!,
-                  style: TextStyle(fontSize: 80,color: Colors.greenAccent.shade700),
+                Center(
+                  child: Text(_info==null?'':_info!,
+                  textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 60,color: Colors.greenAccent.shade700),
+                  ),
                 )
               ],
             ),
@@ -406,9 +410,13 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                         child: SizedBox(height: double.infinity,child: 
                           Padding(
                             padding: const EdgeInsets.all(2.0),
-                            child: ElevatedButton(onPressed: ()=>moveLeftOrRight(AxisDirection.left), child: Icon(Icons.chevron_left),
+                            child: ElevatedButton(onPressed: ()=>moveLeftOrRight(AxisDirection.left), child: Icon(Icons.chevron_left,color: Colors.white,),
                               style:ElevatedButton.styleFrom(
-                                primary:Colors.grey.shade700
+                                primary:Colors.grey.shade700,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)
+                              
+                                ),
                               )
                             ),
                           )
@@ -431,10 +439,14 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                         child: SizedBox(height: double.infinity,child: 
                           Padding(
                             padding: const EdgeInsets.all(2.0),
-                            child: ElevatedButton(onPressed: ()=> moveLeftOrRight(AxisDirection.right), child: Icon(Icons.chevron_right,),
+                            child: ElevatedButton(onPressed: ()=> moveLeftOrRight(AxisDirection.right), child: Icon(Icons.chevron_right,color: Colors.white,),
                               style:ElevatedButton.styleFrom(
-                                primary:Colors.grey.shade700
-                              ),
+                                primary:Colors.grey.shade700,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)
+                              
+                                ),
+                              )
                               
                             ),
                           )
