@@ -194,7 +194,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
       _insertScore(_score);
     }
     }
-    showDialog(context: context,barrierDismissible: false, builder: (context)=>AlertDialog(
+    showDialog(context: context, barrierDismissible: false, builder: (context)=>AlertDialog(
       backgroundColor: Colors.grey.shade900,
                 title: Column(
                   children: [
@@ -234,7 +234,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
                 actionsAlignment: MainAxisAlignment.spaceEvenly,
                 actionsPadding: EdgeInsets.symmetric(vertical: 40),
                 actions: [
-                  IconButton(onPressed: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>WelcomePage()));}, icon: Icon(Icons.home_filled,size: 50,color: Colors.white60,)),
+                  IconButton(onPressed: (){Navigator.of(context).popUntil((route) => route.isFirst);Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>WelcomePage()));}, icon: Icon(Icons.home_filled,size: 50,color: Colors.white60,)),
                   IconButton(onPressed: (){
                     _score=0;
                     currentPiece.newRandomPiece();
@@ -305,6 +305,57 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
         giveInfo('Resume', 1000);
       }
   }
+  Future<bool> exitConfirm(context )async{
+    bool active=false;
+    if(timer!.isActive) {timer!.cancel();active=!active;}
+    showDialog(context: context, barrierDismissible: false, builder: (context)=>AlertDialog(
+      backgroundColor: Colors.grey.shade900,
+                title: Column(
+                  children: [
+                    Center(child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 20),
+                      child: Text('Exit Game ?',style: TextStyle(color: Colors.red,fontSize: 50),),
+                    )),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Score ',style: TextStyle(fontSize: 50,color: Colors.white60)),
+                            Text(_score.toString(),style: TextStyle(fontSize: 60,color: Colors.greenAccent.shade700))
+                          ],
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                          style: TextStyle(fontSize: 20),
+                          children: [
+                              TextSpan(text: 'Leave your scores and eixt game?'),
+                              ]
+                        )),
+                      ),
+                    ),
+                  ],
+                ),
+                // contentPadding: EdgeInsets.all(4),
+                actionsAlignment: MainAxisAlignment.spaceEvenly,
+                actionsPadding: EdgeInsets.symmetric(vertical: 40),
+                actions: [
+                  IconButton(onPressed: (){Navigator.of(context).popUntil((route) => route.isFirst);Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>WelcomePage()));}, icon: Icon(Icons.home_filled,size: 50,color: Colors.white60,)),
+                  IconButton(onPressed: (){
+                    if(active) _startGame();
+                    Navigator.pop(context);
+                  }, icon: Icon(Icons.cancel,size: 50,color: Colors.white60,)),
+                ],
+    ));
+    return false;
+  }
 
   @override
   void dispose() {
@@ -323,187 +374,190 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin{
     double btn_height=(MediaQuery.of(context).size.height-height-90)/4;
     // print('BTN height'+btn_height.toString());
     print('Display');
-    return Scaffold(
-      backgroundColor: Colors.grey.shade900,
-      body: SafeArea(child: Column(
-        children: [
-          GestureDetector(
-            onTap: _rotatePiece,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  // color: Colors.grey.shade900,
-                  width: double.infinity,
-                  height: height,
-                  decoration: BoxDecoration(
-                      color: Colors.grey.shade900,
-                      border: Border(bottom: BorderSide(width: 3,color: Colors.redAccent.shade700))
+    return WillPopScope(
+      onWillPop: (){return exitConfirm(context);},
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade900,
+        body: SafeArea(child: Column(
+          children: [
+            GestureDetector(
+              onTap: _rotatePiece,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    // color: Colors.grey.shade900,
+                    width: double.infinity,
+                    height: height,
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade900,
+                        border: Border(bottom: BorderSide(width: 3,color: Colors.redAccent.shade700))
+                      ),
+                    ),
+                  Container(
+                    height:height,
+                    child: GridView.builder(
+                      itemCount: row*column,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: row),
+                      itemBuilder: (context, index) => Pixels(index: index,
+                        color: gameboard[index]!=null? gameboard[index]!: currentPiece.position.contains(index)?getTetrominoColor(currentPiece.type!): Colors.transparent,
+                      ),
                     ),
                   ),
-                Container(
-                  height:height,
-                  child: GridView.builder(
-                    itemCount: row*column,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: row),
-                    itemBuilder: (context, index) => Pixels(index: index,
-                      color: gameboard[index]!=null? gameboard[index]!: currentPiece.position.contains(index)?getTetrominoColor(currentPiece.type!): Colors.transparent,
+                  Center(
+                    child: Text(_info==null?'':_info!,
+                    textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 60,color: Colors.greenAccent.shade700),
                     ),
-                  ),
-                ),
-                Center(
-                  child: Text(_info==null?'':_info!,
-                  textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 60,color: Colors.greenAccent.shade700),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            height: 50,
-            child: Stack(
-              alignment: Alignment.centerRight,
-              children: [
-                Center(
-                  // child: Text('Score '+_score.toString(),style: TextStyle(fontSize: 25),),
-                  child: RichText(text: TextSpan(
-                    style: TextStyle(fontSize: 25),
-                    children: [
-                        TextSpan(text: 'Score '),
-                        TextSpan(text:_score.toString(),style: TextStyle(fontSize: 30,color: Colors.greenAccent.shade700))
-                      ]
-                  )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: RichText(text: TextSpan(
-                      style: TextStyle(fontSize: 15),
+            Container(
+              width: double.infinity,
+              height: 50,
+              child: Stack(
+                alignment: Alignment.centerRight,
+                children: [
+                  Center(
+                    // child: Text('Score '+_score.toString(),style: TextStyle(fontSize: 25),),
+                    child: RichText(text: TextSpan(
+                      style: TextStyle(fontSize: 25),
                       children: [
-                          TextSpan(text: 'High Score '),
-                          TextSpan(text:highscore==null?'0':highscore.toString(),style: TextStyle(color: TetrominoColor[Tetromino.Z]))
+                          TextSpan(text: 'Score '),
+                          TextSpan(text:_score.toString(),style: TextStyle(fontSize: 30,color: Colors.greenAccent.shade700))
                         ]
                     )),
-                ),
-              ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: RichText(text: TextSpan(
+                        style: TextStyle(fontSize: 15),
+                        children: [
+                            TextSpan(text: 'High Score '),
+                            TextSpan(text:highscore==null?'0':highscore.toString(),style: TextStyle(color: TetrominoColor[Tetromino.Z]))
+                          ]
+                      )),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: ()=>moveLeftOrRight(AxisDirection.left),
+            Expanded(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: ()=>moveLeftOrRight(AxisDirection.left),
+                          onLongPress: () {
+                            // print('STart');
+                            downbtn=Timer.periodic(Duration(milliseconds: 10), (timer) { 
+                              moveLeftOrRight(AxisDirection.left);
+                            });
+                          },
+                          onLongPressUp: () {
+                            // print('END');
+                            if(downbtn!=null)downbtn!.cancel();
+                          },
+                          child: SizedBox(height: double.infinity,child: 
+                            Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: ElevatedButton(onPressed: ()=>moveLeftOrRight(AxisDirection.left), child: Icon(Icons.chevron_left,color: Colors.white,),
+                                style:ElevatedButton.styleFrom(
+                                  primary:Colors.grey.shade700,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)
+                                
+                                  ),
+                                )
+                              ),
+                            )
+                          ),
+                        ),
+                       ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => moveLeftOrRight(AxisDirection.right),
+                          onLongPress: () {
+                            // print('STart');
+                            downbtn=Timer.periodic(Duration(milliseconds: 10), (timer) { 
+                              moveLeftOrRight(AxisDirection.right);
+                            });
+                          },
+                          onLongPressUp: () {
+                            // print('END');
+                            if(downbtn!=null)downbtn!.cancel();
+                          },
+                          child: SizedBox(height: double.infinity,child: 
+                            Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: ElevatedButton(onPressed: ()=> moveLeftOrRight(AxisDirection.right), child: Icon(Icons.chevron_right,color: Colors.white,),
+                                style:ElevatedButton.styleFrom(
+                                  primary:Colors.grey.shade700,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)
+                                
+                                  ),
+                                )
+                                
+                              ),
+                            )
+                          ),
+                        ),
+                       ),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      GestureDetector(
+                        onTap: play_pause,
+                        child: CircleAvatar(
+                          radius: btn_height,
+                          backgroundColor: Colors.black54,
+                          child: CircleAvatar(
+                            radius: btn_height-4,
+                            backgroundColor: Colors.grey.shade700,
+                            child:AnimatedIcon(icon: AnimatedIcons.pause_play, progress: _iconController!,color: Colors.white,)
+                            
+                            ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: ()=>moveLeftOrRight(AxisDirection.down),
                         onLongPress: () {
                           // print('STart');
                           downbtn=Timer.periodic(Duration(milliseconds: 10), (timer) { 
-                            moveLeftOrRight(AxisDirection.left);
+                            moveLeftOrRight(AxisDirection.down);
                           });
                         },
                         onLongPressUp: () {
                           // print('END');
                           if(downbtn!=null)downbtn!.cancel();
                         },
-                        child: SizedBox(height: double.infinity,child: 
-                          Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: ElevatedButton(onPressed: ()=>moveLeftOrRight(AxisDirection.left), child: Icon(Icons.chevron_left,color: Colors.white,),
-                              style:ElevatedButton.styleFrom(
-                                primary:Colors.grey.shade700,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)
-                              
-                                ),
-                              )
+                        child: CircleAvatar(
+                          // radius: 50,
+                          radius: btn_height,
+                          backgroundColor: Colors.black54,
+                          child: CircleAvatar(
+                            // radius: 47,
+                            radius: btn_height-4,
+                            backgroundColor: Colors.grey.shade700,
+                            child: Icon(Icons.arrow_downward,color: Colors.white,)
+                            
                             ),
-                          )
                         ),
                       ),
-                     ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => moveLeftOrRight(AxisDirection.right),
-                        onLongPress: () {
-                          // print('STart');
-                          downbtn=Timer.periodic(Duration(milliseconds: 10), (timer) { 
-                            moveLeftOrRight(AxisDirection.right);
-                          });
-                        },
-                        onLongPressUp: () {
-                          // print('END');
-                          if(downbtn!=null)downbtn!.cancel();
-                        },
-                        child: SizedBox(height: double.infinity,child: 
-                          Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: ElevatedButton(onPressed: ()=> moveLeftOrRight(AxisDirection.right), child: Icon(Icons.chevron_right,color: Colors.white,),
-                              style:ElevatedButton.styleFrom(
-                                primary:Colors.grey.shade700,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)
-                              
-                                ),
-                              )
-                              
-                            ),
-                          )
-                        ),
-                      ),
-                     ),
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    GestureDetector(
-                      onTap: play_pause,
-                      child: CircleAvatar(
-                        radius: btn_height,
-                        backgroundColor: Colors.black54,
-                        child: CircleAvatar(
-                          radius: btn_height-4,
-                          backgroundColor: Colors.grey.shade700,
-                          child:AnimatedIcon(icon: AnimatedIcons.pause_play, progress: _iconController!,color: Colors.white,)
-                          
-                          ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: ()=>moveLeftOrRight(AxisDirection.down),
-                      onLongPress: () {
-                        // print('STart');
-                        downbtn=Timer.periodic(Duration(milliseconds: 10), (timer) { 
-                          moveLeftOrRight(AxisDirection.down);
-                        });
-                      },
-                      onLongPressUp: () {
-                        // print('END');
-                        if(downbtn!=null)downbtn!.cancel();
-                      },
-                      child: CircleAvatar(
-                        // radius: 50,
-                        radius: btn_height,
-                        backgroundColor: Colors.black54,
-                        child: CircleAvatar(
-                          // radius: 47,
-                          radius: btn_height-4,
-                          backgroundColor: Colors.grey.shade700,
-                          child: Icon(Icons.arrow_downward,color: Colors.white,)
-                          
-                          ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          )
-        ],
-      ))
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        ))
+      ),
     );
   }
 }
